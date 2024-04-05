@@ -1,0 +1,206 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en" xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--  <meta charset="UTF-8">-->
+<!--  <title>Upload Files</title>-->
+<!--</head>-->
+<!--<body>-->
+
+<!--  <h1>Upload File</h1>-->
+<!--  <form action="/upload_file" method="post" enctype="multipart/form-data">-->
+<!--    <label for="file">Choose file: </label>-->
+<!--    <input type="file" name="file" id="file" required>-->
+<!--    <br>-->
+<!--    <input type="submit" value="Upload File">-->
+<!--  </form>-->
+
+<!--  <div th:if="${error}" class="error">-->
+<!--    <p th:text="${error}"></p>-->
+<!--  </div>-->
+
+<!--  <a th:href="@{/personal_page}">Back to the personal page</a>-->
+<!--  <a th:href="@{/record}">Record Audio</a>-->
+
+<!--  <h2>List of Files</h2>-->
+
+<!--  <p th:text="${user}"/>-->
+
+<!--  <table>-->
+
+<!--    <thead>-->
+<!--    <tr>-->
+<!--      <th>File Name</th>-->
+<!--      <th>Size MB</th>-->
+<!--      <th>Click To Download</th>-->
+<!--      <th>Delete</th>-->
+<!--    </tr>-->
+<!--    </thead>-->
+<!--    <tbody>-->
+<!--    <tr th:each="file: ${files}">-->
+<!--      <td th:text="${file.fileName}" />-->
+<!--      <td th:text="${file.size}" />-->
+<!--      <td><a th:href="${file.downloadURL}" th:text="${file.downloadURL}">Download File</a></td>-->
+<!--      <td><a th:href="@{/upload_file/delete/{fileId}(fileId=${file.id})}"-->
+<!--             onclick="return confirm('Are you sure?')">Delete</a></td>-->
+<!--    </tr>-->
+<!--    </tbody>-->
+
+<!--  </table>-->
+
+<!--</body>-->
+
+<!--</html>-->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Загрузка файлов</title>
+  <link rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+        crossorigin="anonymous">
+  <link rel="stylesheet" href="/css/style_main.css" type="text/css">
+  <link rel="stylesheet" href="/css/style_form.css" type="text/css">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f8f8f8;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    header {
+      background-color: #333;
+      color: white;
+      padding: 15px;
+      text-align: center;
+      width: 100%;
+    }
+
+    footer {
+      background-color: #333;
+      color: white;
+      padding: 10px;
+      text-align: center;
+      width: 100%;
+      margin-top: auto;
+      position: absolute;
+      bottom: 0;
+    }
+
+    #audioPlayer audio {
+      width: 80%;
+    }
+
+    main {
+      margin: 20px 0;
+      width: 80%;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-right: 10px;
+    }
+
+    button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    a {
+      color: #3498db;
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: #1976D2;
+    }
+
+    .error {
+      color: #D8000C;
+      background-color: #FFD2D2;
+      padding: 15px;
+      border: 1px solid #FF7575;
+      border-radius: 5px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h2>Загрузка файлов</h2>
+  </header>
+
+  <main>
+    <form action="/upload_file" method="post" enctype="multipart/form-data">
+      <label for="file">Выберите файл для загрузки </label>
+      <input type="file" name="file" id="file" required>
+      <br>
+      <input type="submit" value="Upload File">
+    </form>
+
+    <div th:if="${error}" class="error">
+      <p th:text="${error}"></p>
+    </div>
+
+    <table>
+      <thead>
+      <tr>
+        <th>Имя файла</th>
+        <th>Размер в MB</th>
+        <th>Скачать</th>
+        <th>Удалить</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="file: ${files}">
+        <td th:text="${file.fileName}" />
+        <td th:text="${file.size}" />
+        <td><a th:href="${file.downloadURL}" th:text="${file.downloadURL}"></a></td>
+        <td><a class="delete-link" th:href="@{/upload_file/delete/{fileId}(fileId=${file.id})}"
+               onclick="return confirm('Вы уверены?')">Удалить</a></td>
+      </tr>
+      </tbody>
+    </table>
+
+    <br>
+
+    <a th:href="@{/personal_page}">Персональная страница</a>
+    <a th:href="@{/record}">Запись голоса</a>
+  </main>
+
+
+  <footer>
+    <p>&copy; 2024 Voice Assistant Project</p>
+    <p>Свяжитесь с нами communityvoiceassist@gmail.com</p>
+  </footer>
+
+</body>
+</html>

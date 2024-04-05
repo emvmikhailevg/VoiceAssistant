@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Регистрация</title>
+  <link rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+        crossorigin="anonymous">
+
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+
+    h2 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    form {
+      max-width: 400px;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+      display: none;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: #fff;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    a {
+      color: #3498db;
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: #1976D2;
+    }
+
+    .error {
+      color: #D8000C;
+      background-color: #FFD2D2;
+      padding: 15px;
+      margin-bottom: 20px;
+      border: 1px solid #FF7575;
+      border-radius: 5px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Регистрация</h2>
+
+<form method="post" role="form" th:action="@{/register}" th:object="${user}">
+  <label for="login"></label>
+  <input id="login"
+         name="login"
+         placeholder="Имя пользователя"
+         th:field="*{login}"
+         type="text"/>
+  <label for="email"></label>
+  <input id="email"
+         name="email"
+         placeholder="Почта"
+         th:field="*{email}"
+         type="email"/>
+  <label for="password"></label>
+  <input id="password"
+         name="password"
+         placeholder="Пароль"
+         th:field="*{password}"
+         type="password"/>
+  <label for="confirmPassword"></label>
+  <input id="confirmPassword"
+         name="confirmPassword"
+         placeholder="Подтвердите пароль"
+         th:field="*{confirmPassword}"
+         type="password"/>
+  <br/>
+  <button type="submit">Регистрация</button>
+
+  <br/><br/>
+
+  <p th:if="${#fields.hasErrors('login')}" th:errors="*{login}"></p>
+  <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
+  <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
+
+  <div th:if="${error}" class="error">
+    <p th:text="${error}"></p>
+  </div>
+
+  <span>Уже есть аккаунт? <a th:href="@{/login}">Войти</a></span>
+
+</form>
+
+<br/>
+
+<div th:if="${param.success}" class="success">
+  <div>На вашу почту пришло письмо с подтверждением регистрации</div>
+</div>
+
+</body>
+</html>

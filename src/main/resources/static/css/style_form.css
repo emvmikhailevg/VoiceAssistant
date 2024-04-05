@@ -1,0 +1,75 @@
+main {
+    background-color: white;
+    background-position: right;
+    top: 0;
+    left: 0;
+}
+
+.container {
+    top: 285px;
+    left: 570px;
+    position: absolute;
+    z-index: 1000;
+}
+
+.titul {
+    top: 163px;
+    position: absolute;
+    left: 50%;
+}
+
+.recovery {
+    left: 530px;
+}
+
+input[type=text], input[type=password], input[type=date], input[type=tel] {
+    font-family: Inter;
+    width: 300px;
+    border: 0;
+    border-bottom: 1px solid #000;
+    background-color: rgba(0,0,0,0);
+    outline: 0; 
+    display: flex;
+    font-size: 20px;
+    padding-left: 20px;
+    padding-bottom: 5px;
+    margin-bottom: 82px;
+}
+
+.auto {
+    position: absolute;
+    font-size: 15px;
+    left: 606px;
+    top: 678px;
+}
+
+.entrance {
+    padding-left: 37px;
+    position: absolute;
+    z-index: 1000;
+}
+
+.frg-psw {
+    position: absolute;
+    font-size: 15px;
+    top: 448px;
+    left: 655px;
+    z-index: 1000;
+}
+
+button[type=submit] {
+    color: white;
+    background-color: #d9d9d9;
+    border-radius: 5px;
+    align-content: center;
+    font-family: Inter;
+    font-size: 20px;
+    font-family: Inter;
+    border: 0;
+    width: 220px;
+    height: 50px;
+    position: absolute;
+    top: 693px;
+    left: 610px;
+    z-index: 1000;
+}

@@ -1,0 +1,29 @@
+.first-column {
+    top: 176px;
+    left: 361px;
+    position: absolute;
+    z-index: 1000;
+}
+
+.second-column {
+    top: 258px;
+    left: 820px;
+    position: absolute;
+    z-index: 1000;
+}
+
+.photo {
+    background-color: #d9d9d9;
+    border-radius: 50%;
+    width: 220px;
+    height: 220px;
+    margin-bottom: 82px;
+}
+
+.edit {
+    width: 24px;
+    height: 24px;
+    position: absolute;
+    top: 152px;
+    left: 1096px;
+}
