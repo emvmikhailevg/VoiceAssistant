@@ -2,7 +2,7 @@ package ru.urfu.voiceassistant.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.urfu.voiceassistant.entity.UserEntity;
+import ru.urfu.voiceassistant.database.model.User;
 import ru.urfu.voiceassistant.service.EmailSenderService;
 import ru.urfu.voiceassistant.service.PasswordResetService;
 
@@ -27,12 +27,12 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     }
 
     @Override
-    public String generateResetToken(UserEntity user) {
+    public String generateResetToken(User user) {
         return UUID.randomUUID().toString().replace("-", "");
     }
 
     @Override
-    public void sendInstructionsToChangePassword(UserEntity user) {
+    public void sendInstructionsToChangePassword(User user) {
         String messageToResetPassword = buildMessageToResetPassword(user);
 
         emailSenderService.sender(user.getEmail(), "Сброс пароля", messageToResetPassword);
@@ -44,7 +44,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
      * @param user Сущность пользователя, для которого создается сообщение.
      * @return Текстовое сообщение с инструкциями по сбросу пароля.
      */
-    private String buildMessageToResetPassword(UserEntity user) {
+    private String buildMessageToResetPassword(User user) {
         return String.format(
                 "Hello, %s. Now you can visit the next link: http://localhost:8080/password_recovery/%s",
                 user.getLogin(),

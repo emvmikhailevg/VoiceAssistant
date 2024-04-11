@@ -7,14 +7,9 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.urfu.voiceassistant.dto.PasswordRecoveryDTO;
-import ru.urfu.voiceassistant.entity.UserEntity;
-import ru.urfu.voiceassistant.repository.UserRepository;
+import ru.urfu.voiceassistant.database.model.User;
 import ru.urfu.voiceassistant.service.PasswordResetService;
 import ru.urfu.voiceassistant.service.UserService;
-import ru.urfu.voiceassistant.util.enums.ModelMessageAttribute;
-import ru.urfu.voiceassistant.util.enums.RedirectUrlNames;
-import ru.urfu.voiceassistant.util.enums.ValidMessage;
-import ru.urfu.voiceassistant.util.enums.ViewNames;
 
 import java.util.Objects;
 
@@ -25,22 +20,18 @@ import java.util.Objects;
 public class PasswordRecoveryController {
 
     private final UserService userService;
-    private final UserRepository userRepository;
     private final PasswordResetService passwordResetService;
 
     /**
      * Конструктор контроллера.
      *
-     * @param userService         Сервис для работы с пользователями.
-     * @param userRepository      Репозиторий пользователей.
+     * @param userService          Сервис для работы с пользователями.
      * @param passwordResetService Сервис сброса пароля.
      */
     @Autowired
     public PasswordRecoveryController(UserService userService,
-                                    UserRepository userRepository,
                                     PasswordResetService passwordResetService) {
         this.userService = userService;
-        this.userRepository = userRepository;
         this.passwordResetService = passwordResetService;
     }
 
@@ -51,7 +42,7 @@ public class PasswordRecoveryController {
      */
     @GetMapping("/password_reset")
     public String resetPassword() {
-        return ViewNames.PASSWORD_RESET_PAGE.getName();
+        return "passwordResetPage";
     }
 
     /**
@@ -63,24 +54,24 @@ public class PasswordRecoveryController {
      */
     @PostMapping("/password_reset")
     public String resetPassword(@RequestParam String email, Model model) {
-        UserEntity currentUser = userRepository.findByEmail(email);
+        User currentUser = userService.findUserByEmail(email);
 
         if (currentUser == null) {
-            model.addAttribute("error", ModelMessageAttribute.USER_DOES_NOT_EXIST_MESSAGE.getMessage());
-            return ViewNames.PASSWORD_RESET_PAGE.getName();
+            model.addAttribute("error", "Такого пользователя не существует");
+            return "passwordResetPage";
         }
 
         String resetToken = passwordResetService.generateResetToken(currentUser);
         currentUser.setResetToken(resetToken);
-        userRepository.save(currentUser);
+        userService.saveUser(currentUser);
 
         passwordResetService.sendInstructionsToChangePassword(currentUser);
 
         model.addAttribute(
                 "success",
-                ModelMessageAttribute.INSTRUCTIONS_TO_RESET_PASSWORD_MESSAGE.getMessage());
+                "Перейдите по ссылке на почте для смены пароля");
 
-        return ViewNames.PASSWORD_RESET_PAGE.getName();
+        return "passwordResetPage";
     }
 
     /**
@@ -93,11 +84,11 @@ public class PasswordRecoveryController {
     @GetMapping("/password_recovery/{token}")
     public String showPasswordRecoveryPage(@PathVariable String token, Model model) {
         if (token == null) {
-            model.addAttribute("error", ModelMessageAttribute.TOKEN_NOT_EXIST.getMessage());
+            model.addAttribute("error", "Такого токена не существует");
         }
 
         model.addAttribute("token", token);
-        return ViewNames.RECOVERY_PASSWORD_PAGE.getName();
+        return "recoveryPasswordPage";
     }
 
     /**
@@ -114,30 +105,30 @@ public class PasswordRecoveryController {
                                   @Valid @ModelAttribute PasswordRecoveryDTO passwordRecoveryDTO,
                                   BindingResult bindingResult,
                                   Model model) {
-        UserEntity user = userRepository.findUserEntityByResetToken(token);
+        User user = userService.findUserByResetToken(token);
 
         if (user == null) {
-            return "redirect:/%s".formatted(RedirectUrlNames.LOGIN.getUrlAddress());
+            return "redirect:/login";
         }
 
         if (bindingResult.hasErrors()) {
             String validationErrorMessage =
                     Objects.requireNonNull(bindingResult.getFieldError("password")).getDefaultMessage();
             model.addAttribute("error", validationErrorMessage);
-            return ViewNames.RECOVERY_PASSWORD_PAGE.getName();
+            return "recoveryPasswordPage";
         }
 
         if (!passwordRecoveryDTO.getPassword().equals(passwordRecoveryDTO.getConfirmPassword())) {
-            model.addAttribute("error", ValidMessage.PASSWORDS_ARE_DIFFERENT.getMessage());
-            return ViewNames.RECOVERY_PASSWORD_PAGE.getName();
+            model.addAttribute("error", "Пароли совпадают");
+            return "recoveryPasswordPage";
         }
 
         try {
             userService.updateUserPassword(user, passwordRecoveryDTO.getPassword());
-            return "redirect:/%s?success".formatted(RedirectUrlNames.LOGIN.getUrlAddress());
+            return "redirect:/login";
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
-            return ViewNames.RECOVERY_PASSWORD_PAGE.getName();
+            return "recoveryPasswordPage";
         }
     }
 }

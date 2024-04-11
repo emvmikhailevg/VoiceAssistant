@@ -1,8 +1,8 @@
-package ru.urfu.voiceassistant.repository;
+package ru.urfu.voiceassistant.database.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import ru.urfu.voiceassistant.entity.role.Role;
+import ru.urfu.voiceassistant.database.model.Role;
 
 /**
  * Интерфейс репозитория для взаимодействия с таблицей ролей в базе данных.
@@ -16,5 +16,5 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
      * @param name логин пользователя.
      * @return роль пользователя.
      */
-    Role findByLogin(String name);
+    Role findRoleByLogin(String name);
 }

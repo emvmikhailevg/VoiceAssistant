@@ -1,55 +1,3 @@
-<!--<!DOCTYPE html>-->
-<!--<html lang="en" xmlns:th="http://www.thymeleaf.org">-->
-<!--<head>-->
-<!--  <meta charset="UTF-8">-->
-<!--  <title>Upload Files</title>-->
-<!--</head>-->
-<!--<body>-->
-
-<!--  <h1>Upload File</h1>-->
-<!--  <form action="/upload_file" method="post" enctype="multipart/form-data">-->
-<!--    <label for="file">Choose file: </label>-->
-<!--    <input type="file" name="file" id="file" required>-->
-<!--    <br>-->
-<!--    <input type="submit" value="Upload File">-->
-<!--  </form>-->
-
-<!--  <div th:if="${error}" class="error">-->
-<!--    <p th:text="${error}"></p>-->
-<!--  </div>-->
-
-<!--  <a th:href="@{/personal_page}">Back to the personal page</a>-->
-<!--  <a th:href="@{/record}">Record Audio</a>-->
-
-<!--  <h2>List of Files</h2>-->
-
-<!--  <p th:text="${user}"/>-->
-
-<!--  <table>-->
-
-<!--    <thead>-->
-<!--    <tr>-->
-<!--      <th>File Name</th>-->
-<!--      <th>Size MB</th>-->
-<!--      <th>Click To Download</th>-->
-<!--      <th>Delete</th>-->
-<!--    </tr>-->
-<!--    </thead>-->
-<!--    <tbody>-->
-<!--    <tr th:each="file: ${files}">-->
-<!--      <td th:text="${file.fileName}" />-->
-<!--      <td th:text="${file.size}" />-->
-<!--      <td><a th:href="${file.downloadURL}" th:text="${file.downloadURL}">Download File</a></td>-->
-<!--      <td><a th:href="@{/upload_file/delete/{fileId}(fileId=${file.id})}"-->
-<!--             onclick="return confirm('Are you sure?')">Delete</a></td>-->
-<!--    </tr>-->
-<!--    </tbody>-->
-
-<!--  </table>-->
-
-<!--</body>-->
-
-<!--</html>-->
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -163,7 +111,7 @@
       <label for="file">Выберите файл для загрузки </label>
       <input type="file" name="file" id="file" required>
       <br>
-      <input type="submit" value="Upload File">
+      <input type="submit" value="Сохранить">
     </form>
 
     <div th:if="${error}" class="error">

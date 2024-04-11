@@ -8,16 +8,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import ru.urfu.voiceassistant.dto.FileUploadResponseDTO;
-import ru.urfu.voiceassistant.entity.FileEntity;
-import ru.urfu.voiceassistant.entity.UserEntity;
-import ru.urfu.voiceassistant.exception.UnsupportedFileTypeException;
-import ru.urfu.voiceassistant.repository.FileRepository;
+import ru.urfu.voiceassistant.database.model.File;
+import ru.urfu.voiceassistant.database.model.User;
+import ru.urfu.voiceassistant.database.repository.FileRepository;
 import ru.urfu.voiceassistant.service.FileService;
 import ru.urfu.voiceassistant.util.FileUploadUtil;
-import ru.urfu.voiceassistant.util.enums.ExceptionMessage;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -39,17 +38,17 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public void saveFile(FileUploadResponseDTO fileUploadResponseDTO, UserEntity user) {
-        FileEntity file = createFileEntity(fileUploadResponseDTO, user);
+    public void saveFile(FileUploadResponseDTO fileUploadResponseDTO, User user) {
+        File file = createFileEntity(fileUploadResponseDTO, user);
         fileRepository.save(file);
     }
 
     @Override
     @Transactional
-    public void deleteFile(Long fileId, UserEntity user) throws FileNotFoundException {
-        FileEntity file = getFileById(fileId);
+    public void deleteFile(Long fileId, User user) throws FileNotFoundException {
+        File file = getFileById(fileId);
         checkUserPermission(file, user);
-        fileRepository.deleteById(fileId);
+        fileRepository.deleteFileById(fileId);
     }
 
     /**
@@ -75,6 +74,21 @@ public class FileServiceImpl implements FileService {
         return fileUploadResponseDTO;
     }
 
+    @Override
+    public List<File> findAllFiles() {
+        return fileRepository.findAll();
+    }
+
+    @Override
+    public File findFileById(Long fileId) {
+        return fileRepository.findFileById(fileId);
+    }
+
+    @Override
+    public List<File> findAllFilesByUserId(Long id) {
+        return fileRepository.findFilesByUserId(id);
+    }
+
     /**
      * Создает сущность файла на основе информации о загруженном файле и пользователя.
      *
@@ -82,8 +96,8 @@ public class FileServiceImpl implements FileService {
      * @param user Пользователь, которому принадлежит файл.
      * @return Сущность файла.
      */
-    private FileEntity createFileEntity(FileUploadResponseDTO fileUploadResponseDTO, UserEntity user) {
-        FileEntity file = new FileEntity();
+    private File createFileEntity(FileUploadResponseDTO fileUploadResponseDTO, User user) {
+        File file = new File();
         file.setFileName(fileUploadResponseDTO.getFileName());
         file.setSize(fileUploadResponseDTO.getSize());
         file.setDownloadURL(fileUploadResponseDTO.getDownloadURL());
@@ -98,10 +112,10 @@ public class FileServiceImpl implements FileService {
      * @return Сущность файла.
      * @throws FileNotFoundException Если файл не найден по заданному идентификатору.
      */
-    private FileEntity getFileById(Long fileId) throws FileNotFoundException {
+    private File getFileById(Long fileId) throws FileNotFoundException {
         return fileRepository.findById(fileId)
                 .orElseThrow(() -> new FileNotFoundException(
-                        ExceptionMessage.FILE_NOT_FOUND_WITH_ID_MESSAGE.getMessage() + fileId));
+                        "Файл с данным id не найден: " + fileId));
     }
 
     /**
@@ -111,9 +125,9 @@ public class FileServiceImpl implements FileService {
      * @param user Пользователь, выполняющий удаление.
      * @throws AccessDeniedException Если пользователь не имеет прав на удаление файла.
      */
-    private void checkUserPermission(FileEntity file, UserEntity user) {
+    private void checkUserPermission(File file, User user) {
         if (!file.getUser().equals(user)) {
-            throw new AccessDeniedException(ExceptionMessage.PERMISSION_ERROR_MESSAGE.getMessage());
+            throw new AccessDeniedException("У вас нет прав на удаление файла");
         }
     }
 
@@ -121,7 +135,7 @@ public class FileServiceImpl implements FileService {
      * Проверяет тип аудиофайла и выбрасывает исключение, если файл не поддерживается.
      *
      * @param multipartFile Загружаемый аудиофайл.
-     * @throws UnsupportedFileTypeException Если тип файла не поддерживается.
+     * @throws RuntimeException Если тип файла не поддерживается.
      */
     private void validateAudioFileType(MultipartFile multipartFile) {
         String fileExtension = FilenameUtils.getExtension(
@@ -129,8 +143,8 @@ public class FileServiceImpl implements FileService {
         );
 
         if (!("mp3".equalsIgnoreCase(fileExtension) || "wav".equalsIgnoreCase(fileExtension))) {
-            throw new UnsupportedFileTypeException(
-                    ExceptionMessage.UNSUPPORTED_FILE_TYPE_MESSAGE.getMessage()
+            throw new RuntimeException(
+                    "Неподдерживаемый тип файла"
             );
         }
     }

@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * Класс DTO (Data Transfer Object) для представления ответа на запрос о загрузке файла.
@@ -22,7 +23,7 @@ public class FileUploadResponseDTO {
     /**
      * Имя файла. Не должно быть пустым.
      */
-    @NotEmpty(message = "File name cannot be empty")
+    @NotEmpty(message = "Имя файла не может быть пустым")
     private String fileName;
 
     /**
@@ -40,4 +41,17 @@ public class FileUploadResponseDTO {
      * Дата и время создания файла.
      */
     private LocalDateTime createdAt;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FileUploadResponseDTO that = (FileUploadResponseDTO) o;
+        return Objects.equals(fileName, that.fileName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(fileName);
+    }
 }

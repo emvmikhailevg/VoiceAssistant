@@ -7,10 +7,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import ru.urfu.voiceassistant.entity.UserEntity;
-import ru.urfu.voiceassistant.entity.role.Role;
-import ru.urfu.voiceassistant.repository.UserRepository;
-import ru.urfu.voiceassistant.util.enums.ExceptionMessage;
+import ru.urfu.voiceassistant.database.model.User;
+import ru.urfu.voiceassistant.database.model.Role;
+import ru.urfu.voiceassistant.database.repository.UserRepository;
+import ru.urfu.voiceassistant.service.UserService;
 
 import java.util.Collection;
 import java.util.List;
@@ -23,16 +23,16 @@ import java.util.stream.Collectors;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     /**
      * Конструктор с параметром {@link UserRepository} для внедрения зависимости.
      *
-     * @param userRepository репозиторий пользователей.
+     * @param userService Сервис для работы с пользователями.
      */
     @Autowired
-    public CustomUserDetailsService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public CustomUserDetailsService(UserService userService) {
+        this.userService = userService;
     }
 
     /**
@@ -44,7 +44,7 @@ public class CustomUserDetailsService implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        UserEntity uniqueUser = userRepository.findByEmail(email);
+        User uniqueUser = userService.findUserByEmail(email);
 
         if (uniqueUser != null) {
             return new org.springframework.security.core.userdetails.User(
@@ -52,7 +52,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                     uniqueUser.getPassword(),
                     mapRolesToAuthorities(uniqueUser.getRoles()));
         } else {
-            throw new UsernameNotFoundException(ExceptionMessage.INVALID_MAIL_OR_PASSWORD_MESSAGE.getMessage());
+            throw new UsernameNotFoundException("Неверный email или имя пользователя");
         }
     }
 

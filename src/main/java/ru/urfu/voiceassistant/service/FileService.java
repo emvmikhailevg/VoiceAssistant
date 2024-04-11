@@ -2,10 +2,12 @@ package ru.urfu.voiceassistant.service;
 
 import org.springframework.web.multipart.MultipartFile;
 import ru.urfu.voiceassistant.dto.FileUploadResponseDTO;
-import ru.urfu.voiceassistant.entity.UserEntity;
+import ru.urfu.voiceassistant.database.model.File;
+import ru.urfu.voiceassistant.database.model.User;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Сервис, предоставляющий функционал операций с файлами.
@@ -20,7 +22,7 @@ public interface FileService {
      * @param fileUploadResponseDTO Информация о загруженном файле.
      * @param user Пользователь, которому принадлежит файл.
      */
-    void saveFile(FileUploadResponseDTO fileUploadResponseDTO, UserEntity user);
+    void saveFile(FileUploadResponseDTO fileUploadResponseDTO, User user);
 
     /**
      * Удаляет файл по его идентификатору с проверкой разрешений пользователя.
@@ -29,7 +31,7 @@ public interface FileService {
      * @param user Пользователь, выполняющий удаление.
      * @throws FileNotFoundException Если файл не найден по заданному идентификатору.
      */
-    void deleteFile(Long fileId, UserEntity user) throws IOException;
+    void deleteFile(Long fileId, User user) throws IOException;
 
     /**
      * Создает новый аудиофайл, сохраняет его и возвращает информацию о загруженном файле.
@@ -39,4 +41,27 @@ public interface FileService {
      * @throws IOException Если произошла ошибка при работе с файлом.
      */
     FileUploadResponseDTO createNewAudioFile(MultipartFile multipartFile) throws IOException;
+
+    /**
+     * Ищет все существующие файлы.
+     *
+     * @return Список файлов.
+     */
+    List<File> findAllFiles();
+
+    /**
+     * Ищет файл по переданному идентификатору.
+     *
+     * @param fileId Идентификатор файла.
+     * @return       Сущность файла.
+     */
+    File findFileById(Long fileId);
+
+    /**
+     * Ищет все файлы, привязанные к конкретному пользователю.
+     *
+     * @param id Идентификатор пользователя.
+     * @return   Список файлов.
+     */
+    List<File> findAllFilesByUserId(Long id);
 }

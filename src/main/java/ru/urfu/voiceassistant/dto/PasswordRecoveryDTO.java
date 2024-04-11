@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Objects;
+
 /**
  * Класс DTO (Data Transfer Object) для представления данных о восстановлении пароля.
  * Содержит информацию о новом пароле и его подтверждении.
@@ -36,4 +38,17 @@ public class PasswordRecoveryDTO {
      */
     @NotEmpty(message = "Подтверждаемый пароль не может быть пустым")
     private String confirmPassword;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PasswordRecoveryDTO that = (PasswordRecoveryDTO) o;
+        return Objects.equals(confirmPassword, that.confirmPassword);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(confirmPassword);
+    }
 }

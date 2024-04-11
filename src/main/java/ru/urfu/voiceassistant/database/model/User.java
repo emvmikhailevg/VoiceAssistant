@@ -1,4 +1,4 @@
-package ru.urfu.voiceassistant.entity;
+package ru.urfu.voiceassistant.database.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import ru.urfu.voiceassistant.entity.role.Role;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -21,7 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
-public class UserEntity {
+public class User {
 
     /**
      * Идентификатор пользователя.
@@ -78,11 +77,6 @@ public class UserEntity {
     private LocalDateTime createdAt;
 
     /**
-     * Код активации для пользователя.
-     */
-    private String activationCode;
-
-    /**
      * Токен сброса пароля.
      */
     private String resetToken;
@@ -101,15 +95,5 @@ public class UserEntity {
      * Список файлов, принадлежащих пользователю.
      */
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<FileEntity> files = new ArrayList<>();
-
-    /**
-     * Переопределение метода toString() для удобства отображения информации о пользователе.
-     *
-     * @return строка, представляющая объект {@link UserEntity}.
-     */
-    @Override
-    public String toString() {
-        return "login = " + login + ", email = " + email;
-    }
+    private List<File> files = new ArrayList<>();
 }

@@ -1,8 +1,8 @@
-package ru.urfu.voiceassistant.repository;
+package ru.urfu.voiceassistant.database.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import ru.urfu.voiceassistant.entity.FileEntity;
+import ru.urfu.voiceassistant.database.model.File;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ import java.util.List;
  * Интерфейс репозитория для взаимодействия с таблицей файлов в базе данных.
  */
 @Repository
-public interface FileRepository extends JpaRepository<FileEntity, Long> {
+public interface FileRepository extends JpaRepository<File, Long> {
 
     /**
      * Находит список файлов по идентификатору пользователя.
@@ -18,7 +18,7 @@ public interface FileRepository extends JpaRepository<FileEntity, Long> {
      * @param id идентификатор пользователя.
      * @return список файлов пользователя.
      */
-    List<FileEntity> findFilesEntityByUserId(Long id);
+    List<File> findFilesByUserId(Long id);
 
     /**
      * Находит файл по его идентификатору.
@@ -26,12 +26,12 @@ public interface FileRepository extends JpaRepository<FileEntity, Long> {
      * @param id идентификатор файла.
      * @return файл с указанным идентификатором.
      */
-    FileEntity findFileEntityById(Long id);
+    File findFileById(Long id);
 
     /**
      * Удаляет файл по его идентификатору.
      *
      * @param id идентификатор файла.
      */
-    void deleteById(Long id);
+    void deleteFileById(Long id);
 }

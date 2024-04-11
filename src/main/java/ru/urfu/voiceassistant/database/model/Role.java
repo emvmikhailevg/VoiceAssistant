@@ -1,11 +1,10 @@
-package ru.urfu.voiceassistant.entity.role;
+package ru.urfu.voiceassistant.database.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.urfu.voiceassistant.entity.UserEntity;
 
 import java.util.List;
 
@@ -37,5 +36,5 @@ public class Role {
      * Список пользователей, имеющих данную роль.
      */
     @ManyToMany(mappedBy = "roles")
-    private List<UserEntity> users;
+    private List<User> users;
 }

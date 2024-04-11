@@ -1,4 +1,4 @@
-package ru.urfu.voiceassistant.entity;
+package ru.urfu.voiceassistant.database.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "files")
-public class FileEntity {
+public class File {
 
     /**
      * Идентификатор файла.
@@ -54,5 +54,5 @@ public class FileEntity {
      */
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private UserEntity user;
+    private User user;
 }

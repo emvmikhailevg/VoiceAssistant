@@ -7,13 +7,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import ru.urfu.voiceassistant.dto.FileUploadResponseDTO;
-import ru.urfu.voiceassistant.entity.UserEntity;
-import ru.urfu.voiceassistant.exception.UnsupportedFileTypeException;
-import ru.urfu.voiceassistant.repository.FileRepository;
-import ru.urfu.voiceassistant.repository.UserRepository;
+import ru.urfu.voiceassistant.database.model.User;
 import ru.urfu.voiceassistant.service.FileService;
-import ru.urfu.voiceassistant.util.enums.RedirectUrlNames;
-import ru.urfu.voiceassistant.util.enums.ViewNames;
+import ru.urfu.voiceassistant.service.UserService;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -29,23 +25,19 @@ import static ru.urfu.voiceassistant.util.FileUploadUtil.deleteFileByCode;
 public class FileUploadController {
 
     private final FileService fileService;
-    private final UserRepository userRepository;
-    private final FileRepository fileRepository;
+    private final UserService userService;
 
     /**
      * Конструктор контроллера.
      *
-     * @param fileService    Сервис для работы с файлами.
-     * @param userRepository  Репозиторий пользователей.
-     * @param fileRepository Репозиторий файлов.
+     * @param fileService Сервис для работы с файлами.
+     * @param userService Сервис для работы с пользователями.
      */
     @Autowired
     public FileUploadController(FileService fileService,
-                                UserRepository userRepository,
-                                FileRepository fileRepository) {
+                                UserService userService) {
         this.fileService = fileService;
-        this.userRepository = userRepository;
-        this.fileRepository = fileRepository;
+        this.userService = userService;
     }
 
     /**
@@ -54,25 +46,25 @@ public class FileUploadController {
      * @param multipartFile Загружаемый файл.
      * @param principal     Текущий пользователь.
      * @param model         Модель для передачи данных в представление.
-     * @return Редирект на страницу загрузки файлов или страницу входа в случае ошибки аутентификации.
-     * @throws IOException Исключение в случае ошибки ввода/вывода.
+     * @return              Редирект на страницу загрузки файлов или страницу входа в случае ошибки аутентификации.
+     * @throws IOException  Исключение в случае ошибки ввода/вывода.
      */
     @PostMapping("")
     public String uploadFile(@RequestParam("file") MultipartFile multipartFile,
                              Principal principal,
                              Model model) throws IOException {
-        UserEntity uniqueUser = userRepository.findByEmail(principal.getName());
+        User uniqueUser = userService.findUserByEmail(principal.getName());
 
         try {
             FileUploadResponseDTO newAudioFile = fileService.createNewAudioFile(multipartFile);
             fileService.saveFile(newAudioFile, uniqueUser);
-            return "redirect:/%s".formatted(RedirectUrlNames.UPLOAD_FILE.getUrlAddress());
-        } catch (UnsupportedFileTypeException e) {
+            return "redirect:/upload_file";
+        } catch (RuntimeException e) {
             model.addAttribute("error", e.getMessage());
-            model.addAttribute("files", fileRepository.findFilesEntityByUserId(uniqueUser.getId()));
+            model.addAttribute("files", fileService.findAllFilesByUserId(uniqueUser.getId()));
             model.addAttribute("user", uniqueUser.getLogin());
 
-            return ViewNames.UPLOAD_FILE_PAGE.getName();
+            return "uploadFile";
         }
     }
 
@@ -84,16 +76,16 @@ public class FileUploadController {
      */
     @GetMapping("")
     public ModelAndView GetUploadFilePage(Principal principal) {
-        UserEntity uniqueUser = userRepository.findByEmail(principal.getName());
+        User uniqueUser = userService.findUserByEmail(principal.getName());
 
-        ModelAndView modelAndView = new ModelAndView(ViewNames.UPLOAD_FILE_PAGE.getName());
-        ModelAndView modelAndViewLogin = new ModelAndView(ViewNames.LOGIN_PAGE.getName());
+        ModelAndView modelAndView = new ModelAndView("uploadFile");
+        ModelAndView modelAndViewLogin = new ModelAndView("login");
 
         if (uniqueUser == null) {
             return modelAndViewLogin;
         }
 
-        modelAndView.addObject("files", fileRepository.findFilesEntityByUserId(uniqueUser.getId()));
+        modelAndView.addObject("files", fileService.findAllFilesByUserId(uniqueUser.getId()));
         modelAndView.addObject("user", uniqueUser.getLogin());
 
         return modelAndView;
@@ -109,10 +101,10 @@ public class FileUploadController {
      */
     @GetMapping("/delete/{fileId}")
     public String deleteFile(@PathVariable Long fileId, Principal principal, Model model) {
-        UserEntity uniqueUser = userRepository.findByEmail(principal.getName());
+        User uniqueUser = userService.findUserByEmail(principal.getName());
 
         try {
-            String linkToDownload = fileRepository.findFileEntityById(fileId).getDownloadURL();
+            String linkToDownload = fileService.findFileById(fileId).getDownloadURL();
             String fileCode = linkToDownload.substring(linkToDownload.lastIndexOf("/") + 1);
             deleteFileByCode(fileCode);
             fileService.deleteFile(fileId, uniqueUser);
@@ -122,6 +114,6 @@ public class FileUploadController {
             throw new RuntimeException(e);
         }
 
-        return "redirect:/%s".formatted(RedirectUrlNames.UPLOAD_FILE.getUrlAddress());
+        return "redirect:/upload_file";
     }
 }

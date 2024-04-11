@@ -2,7 +2,6 @@ package ru.urfu.voiceassistant.util;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.web.multipart.MultipartFile;
-import ru.urfu.voiceassistant.util.enums.ExceptionMessage;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +21,7 @@ public class FileUploadUtil {
      * @throws IOException выбрасывается в случае ошибок ввода-вывода.
      */
     public static String saveFile(String fileName, MultipartFile multipartFile) throws IOException {
-        Path uploadDirectory = Paths.get("Files-Upload");
+        Path uploadDirectory = Paths.get("files-upload");
 
         String fileCode = RandomStringUtils.randomAlphanumeric(8);
 
@@ -30,7 +29,7 @@ public class FileUploadUtil {
             Path filePath = uploadDirectory.resolve(fileCode + "-" + fileName);
             Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            throw new IOException(ExceptionMessage.ERROR_SAVING_FILE_MESSAGE.getMessage()
+            throw new IOException("Не удалось сохранить файл: "
                     + fileName, e);
         }
 
@@ -53,7 +52,7 @@ public class FileUploadUtil {
                 Files.delete(file);
             }
         } catch (IOException e) {
-            throw new IOException(ExceptionMessage.ERROR_DELETING_FILE_WITH_CODE_MESSAGE.getMessage()
+            throw new IOException("Не удалось удалить файл: "
                     + fileCode, e);
         }
     }

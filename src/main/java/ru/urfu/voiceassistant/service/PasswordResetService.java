@@ -1,6 +1,6 @@
 package ru.urfu.voiceassistant.service;
 
-import ru.urfu.voiceassistant.entity.UserEntity;
+import ru.urfu.voiceassistant.database.model.User;
 
 /**
  * Сервис, предоставляющий функционал для сброса пароля.
@@ -15,12 +15,12 @@ public interface PasswordResetService {
      * @param user Сущность пользователя, для которого генерируется токен сброса пароля.
      * @return Уникальный токен сброса пароля.
      */
-    String generateResetToken(UserEntity user);
+    String generateResetToken(User user);
 
     /**
      * Отправляет инструкции для смены пароля пользователю по электронной почте.
      *
      * @param user Сущность пользователя, для которого отправляются инструкции по сбросу пароля.
      */
-    void sendInstructionsToChangePassword(UserEntity user);
+    void sendInstructionsToChangePassword(User user);
 }

@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Objects;
+
 /**
  * Класс DTO (Data Transfer Object) для представления данных о пользователе.
  * Содержит информацию о логине, электронной почте, имени, фамилии, дне рождения,
@@ -46,9 +48,8 @@ public class UserDTO {
     private String birthday;
 
     /**
-     * Номер телефона пользователя. Должен соответствовать формату "+7" и 10 цифр.
+     * Номер телефона пользователя
      */
-    @Pattern(regexp = "\\+7\\d{10}", message = "Номер телефона невалиден")
     private String number;
 
     /**
@@ -69,4 +70,17 @@ public class UserDTO {
      */
     @NotEmpty(message = "Подтверждаемый пароль не может быть пустым")
     private String confirmPassword;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserDTO userDTO = (UserDTO) o;
+        return Objects.equals(email, userDTO.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(email);
+    }
 }

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Страница записи голоса</title>
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            width: 100%;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            width: 100%;
+            margin-top: auto;
+            position: absolute;
+            bottom: 0;
+        }
+
+        #audioPlayer {
+            width: 100%;
+            margin-top: 20px;
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        #audioPlayer audio {
+            width: 80%;
+        }
+
+        main {
+            margin: 20px 0;
+            width: 80%;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #1976D2;
+        }
+
+        #message, #error {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h2>Запись голоса</h2>
+    <p>Добро пожаловать! Здесь вы можете записать голос для последующей обработки</p>
+</header>
+
+<main>
+    <button id="recordButton" onclick="toggleRecording()">Начать запись</button>
+    <button id="playRecord" onclick="togglePlayPause()" disabled>Прослушать</button>
+    <button id="saveRecord" onclick="saveRecording()" disabled>Сохранить</button>
+
+    <p id="message" style="color: green"></p>
+    <p id="error" style="color: red"></p>
+
+    <audio id="audioPlayer" controls></audio>
+
+    <table id="fileTable">
+        <thead>
+        <tr>
+            <th>Имя файла</th>
+            <th>Размер в MB</th>
+            <th>Скачать</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="file: ${files}">
+            <td th:text="${file.fileName}"></td>
+            <td th:text="${file.size}"></td>
+            <td><a th:href="${file.downloadURL}" th:text="${file.downloadURL}"></a></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <br>
+
+    <a th:href="@{/upload_file}">Загрузить файл</a>
+    <a th:href="@{/personal_page}">Персональная страница</a>
+    <a th:href="@{/logout}">Выйти</a>
+</main>
+
+<footer>
+    <p>&copy; 2024 Voice Assistant Project</p>
+    <p>Свяжитесь с нами communityvoiceassist@gmail.com</p>
+</footer>
+
+<script>
+    let mediaRecorder;
+    let audioChunks = [];
+    let isPlaying = false;
+    const recordButton = document.getElementById('recordButton');
+    const playRecordButton = document.getElementById('playRecord');
+    const saveRecordButton = document.getElementById('saveRecord');
+    const audioPlayer = document.getElementById('audioPlayer');
+    const messageElement = document.getElementById('message');
+    const errorElement = document.getElementById('error');
+
+    function toggleRecording() {
+        if (!mediaRecorder || mediaRecorder.state === 'inactive') {
+            startRecording();
+        } else {
+            stopRecording();
+        }
+    }
+
+    function startRecording() {
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(stream => {
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.ondataavailable = event => {
+                    if (event.data.size > 0) {
+                        audioChunks.push(event.data);
+                    }
+                };
+
+                mediaRecorder.onstop = () => {
+                    recordButton.disabled = false;
+                    playRecordButton.disabled = false;
+                    saveRecordButton.disabled = false;
+                    messageElement.textContent = 'Recording stopped.';
+                    audioPlayer.src = URL.createObjectURL(new Blob(audioChunks, { type: 'audio/wav' }));
+                };
+
+                recordButton.disabled = false;
+                playRecordButton.disabled = true;
+                saveRecordButton.disabled = true;
+                messageElement.textContent = 'Recording...';
+                errorElement.textContent = '';
+
+                mediaRecorder.start();
+                recordButton.innerHTML = "Завершить запись";
+            })
+            .catch(error => {
+                console.error('Error accessing microphone:', error);
+                errorElement.textContent = 'Error accessing microphone: ' + error.message;
+            });
+    }
+
+    function stopRecording() {
+        mediaRecorder.stop();
+        recordButton.innerHTML = "Начать запись";
+    }
+
+    function togglePlayPause() {
+        if (audioPlayer.paused || audioPlayer.ended) {
+            audioPlayer.play();
+            playRecordButton.innerHTML = "Пауза";
+        } else {
+            audioPlayer.pause();
+            playRecordButton.innerHTML = "Продолжить";
+        }
+
+        isPlaying = !isPlaying;
+
+        audioPlayer.onended = function() {
+            playRecordButton.innerHTML = "Возобновить";
+            isPlaying = false;
+        };
+    }
+
+    function saveRecording() {
+        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+        const formData = new FormData();
+        formData.append('multipartFile', new File([audioBlob], 'rec.wav'));
+
+        fetch('/record/save', {
+            method: 'POST',
+            body: formData,
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
+            .then(data => {
+                const redirectUrl = data.trim();
+                if (redirectUrl.startsWith('redirect:')) {
+                    window.location.href = redirectUrl.substring('redirect:'.length);
+                } else {
+                    messageElement.textContent = '';
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                errorElement.textContent = 'Error saving file: ' + error.message;
+            });
+
+        audioChunks = [];
+        saveRecordButton.disabled = true;
+    }
+</script>
+</body>
+</html>

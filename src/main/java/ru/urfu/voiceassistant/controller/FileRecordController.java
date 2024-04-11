@@ -10,17 +10,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import ru.urfu.voiceassistant.dto.FileUploadResponseDTO;
-import ru.urfu.voiceassistant.entity.UserEntity;
-import ru.urfu.voiceassistant.repository.FileRepository;
-import ru.urfu.voiceassistant.repository.UserRepository;
+import ru.urfu.voiceassistant.database.model.File;
+import ru.urfu.voiceassistant.database.model.User;
 import ru.urfu.voiceassistant.service.FileService;
+import ru.urfu.voiceassistant.service.UserService;
 import ru.urfu.voiceassistant.util.FileUploadUtil;
-import ru.urfu.voiceassistant.util.enums.RedirectUrlNames;
-import ru.urfu.voiceassistant.util.enums.ViewNames;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.Principal;
+import java.util.List;
 
 /**
  * Контроллер для работы с записями файлов.
@@ -29,24 +28,21 @@ import java.security.Principal;
 @RequestMapping("/record")
 public class FileRecordController {
 
+
+    private final UserService userService;
     private final FileService fileService;
-    private final UserRepository userRepository;
-    private final FileRepository fileRepository;
 
     /**
      * Конструктор контроллера.
      *
-     * @param fileService       Сервис для работы с файлами.
-     * @param userRepository    Репозиторий пользователей.
-     * @param fileRepository    Репозиторий файлов.
+     * @param userService Сервис для работы с пользователями.
+     * @param fileService Сервис для работы с файлами.
      */
     @Autowired
-    public FileRecordController(FileService fileService,
-                                UserRepository userRepository,
-                                FileRepository fileRepository) {
+    public FileRecordController(UserService userService,
+                                FileService fileService) {
+        this.userService = userService;
         this.fileService = fileService;
-        this.userRepository = userRepository;
-        this.fileRepository = fileRepository;
     }
 
     /**
@@ -56,8 +52,9 @@ public class FileRecordController {
      */
     @GetMapping("")
     public ModelAndView getMainRecordPage() {
-        ModelAndView mainPage = new ModelAndView(ViewNames.RECORD_FILE_PAGE.getName());
-        mainPage.addObject("files", fileRepository.findAll());
+        ModelAndView mainPage = new ModelAndView("recordFilePage");
+        List<File> files = fileService.findAllFiles();
+        mainPage.addObject("files", files);
         return mainPage;
     }
 
@@ -71,12 +68,12 @@ public class FileRecordController {
      */
     @PostMapping("/save")
     public String saveRecord(MultipartFile multipartFile, Principal principal) throws IOException {
-        UserEntity uniqueUser = userRepository.findByEmail(principal.getName());
+        User uniqueUser = userService.findUserByEmail(principal.getName());
 
         FileUploadResponseDTO newAudioFile = fileService.createNewAudioFile(multipartFile);
         fileService.saveFile(newAudioFile, uniqueUser);
 
-        return "redirect:/%s".formatted(RedirectUrlNames.RECORD.getUrlAddress());
+        return "redirect:/record";
     }
 
     /**
@@ -89,10 +86,10 @@ public class FileRecordController {
      */
     @GetMapping("/delete/{fileId}")
     public String deleteFile(@PathVariable Long fileId, Principal principal, Model model) {
-        UserEntity uniqueUser = userRepository.findByEmail(principal.getName());
+        User uniqueUser = userService.findUserByEmail(principal.getName());
 
         try {
-            String linkToDownload = fileRepository.findFileEntityById(fileId).getDownloadURL();
+            String linkToDownload = fileService.findFileById(fileId).getDownloadURL();
             String fileCode = linkToDownload.substring(linkToDownload.lastIndexOf("/") + 1);
             FileUploadUtil.deleteFileByCode(fileCode);
             fileService.deleteFile(fileId, uniqueUser);
@@ -102,6 +99,6 @@ public class FileRecordController {
             throw new RuntimeException(e);
         }
 
-        return "redirect:/%s".formatted(RedirectUrlNames.RECORD.getUrlAddress());
+        return "redirect:/record";
     }
 }

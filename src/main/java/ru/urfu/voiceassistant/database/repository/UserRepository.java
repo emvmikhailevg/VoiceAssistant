@@ -1,14 +1,14 @@
-package ru.urfu.voiceassistant.repository;
+package ru.urfu.voiceassistant.database.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import ru.urfu.voiceassistant.entity.UserEntity;
+import ru.urfu.voiceassistant.database.model.User;
 
 /**
  * Интерфейс репозитория для взаимодействия с таблицей пользователей в базе данных.
  */
 @Repository
-public interface UserRepository extends JpaRepository<UserEntity, Long> {
+public interface UserRepository extends JpaRepository<User, Long> {
 
     /**
      * Находит пользователя по его электронной почте.
@@ -16,15 +16,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
      * @param email электронная почта пользователя.
      * @return пользователь с указанной электронной почтой.
      */
-    UserEntity findByEmail(String email);
-
-    /**
-     * Находит пользователя по коду активации.
-     *
-     * @param activationCode код активации пользователя.
-     * @return пользователь с указанным кодом активации.
-     */
-    UserEntity findUserEntityByActivationCode(String activationCode);
+    User findUserByEmail(String email);
 
     /**
      * Находит пользователя по токену сброса пароля.
@@ -32,5 +24,5 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
      * @param resetToken токен сброса пароля пользователя.
      * @return пользователь с указанным токеном сброса пароля.
      */
-    UserEntity findUserEntityByResetToken(String resetToken);
+    User findUserByResetToken(String resetToken);
 }
