@@ -1,35 +1,37 @@
 package ru.urfu.voiceassistant.backend.database.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * Класс представляет сущность файла в системе.
  */
+@Entity
+@Table(name = "app_file")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "files")
 public class File {
 
     /**
      * Идентификатор файла.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "app_file_id_seq", sequenceName = "app_file_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "app_file_id_seq")
+    @Setter(AccessLevel.NONE)
     private Long id;
 
     /**
      * Имя файла.
      */
+    @NotBlank
     private String fileName;
 
     /**
@@ -47,6 +49,8 @@ public class File {
      */
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
     private LocalDateTime createdAt;
 
     /**
@@ -55,4 +59,17 @@ public class File {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        File file = (File) o;
+        return Objects.equals(id, file.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

@@ -39,7 +39,7 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public void saveFile(FileUploadResponseDTO fileUploadResponseDTO, User user) {
-        File file = createFileEntity(fileUploadResponseDTO, user);
+        File file = createFile(fileUploadResponseDTO, user);
         fileRepository.save(file);
     }
 
@@ -96,7 +96,7 @@ public class FileServiceImpl implements FileService {
      * @param user Пользователь, которому принадлежит файл.
      * @return Сущность файла.
      */
-    private File createFileEntity(FileUploadResponseDTO fileUploadResponseDTO, User user) {
+    private File createFile(FileUploadResponseDTO fileUploadResponseDTO, User user) {
         File file = new File();
         file.setFileName(fileUploadResponseDTO.getFileName());
         file.setSize(fileUploadResponseDTO.getSize());

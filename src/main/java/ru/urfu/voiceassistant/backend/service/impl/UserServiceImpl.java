@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void registerUser(UserDTO userDTO) {
-        User user = createUserEntityFromDTO(userDTO);
+        User user = createUserFromDTO(userDTO);
         Role role = getOrCreateUserRole();
 
         user.setRoles(List.of(role));
@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService {
      * @param userDTO Объект передачи данных пользователя.
      * @return Сущность пользователя, созданная на основе данных из {@code userDTO}.
      */
-    private User createUserEntityFromDTO(UserDTO userDTO) {
+    private User createUserFromDTO(UserDTO userDTO) {
         User user = new User();
         user.setLogin(userDTO.getLogin());
         user.setEmail(userDTO.getEmail());

@@ -57,10 +57,9 @@ public class AuthenticationController {
      * @return Страница "register" с формой регистрации.
      */
     @GetMapping("/register")
-    public ModelAndView showRegistrationForm() {
-        ModelAndView modelAndView = new ModelAndView("register");
-        modelAndView.addObject("user", new UserDTO());
-        return modelAndView;
+    public String showRegistrationForm(Model model) {
+        model.addAttribute("user", new UserDTO());
+        return "register";
     }
 
     /**
@@ -85,11 +84,12 @@ public class AuthenticationController {
         }
 
         if (!userDTO.getPassword().equals(userDTO.getConfirmPassword())) {
-            model.addAttribute("error", "Пароли совпадают");
+            model.addAttribute("error", "Пароли не совпадают");
             return "register";
         }
 
         userService.registerUser(userDTO);
+
         return "redirect:/register";
     }
 }

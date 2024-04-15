@@ -62,6 +62,7 @@ public class SecurityConfig {
                                 .requestMatchers("/register/**").permitAll()
                                 .requestMatchers("/password_reset/**").permitAll()
                                 .requestMatchers("/password_recovery/**").permitAll()
+                                .requestMatchers("/error").permitAll()
                                 .requestMatchers("/personal_page/**").hasAnyRole("ADMIN", "USER")
                                 .requestMatchers("/download_file/**").hasAnyRole("ADMIN", "USER")
                                 .requestMatchers("/upload_file/**").hasAnyRole("ADMIN", "USER")
