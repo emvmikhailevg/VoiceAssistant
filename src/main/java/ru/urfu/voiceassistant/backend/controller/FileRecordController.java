@@ -51,9 +51,11 @@ public class FileRecordController {
      * @return Модель и представление "recordFilePage" со списком файлов.
      */
     @GetMapping("")
-    public ModelAndView getMainRecordPage() {
+    public ModelAndView getMainRecordPage(Principal principal) {
+        User uniqueUser = userService.findUserByEmail(principal.getName());
+
         ModelAndView mainPage = new ModelAndView("recordFilePage");
-        List<File> files = fileService.findAllFiles();
+        List<File> files = fileService.findAllFilesByUserId(uniqueUser.getId());
         mainPage.addObject("files", files);
         return mainPage;
     }
