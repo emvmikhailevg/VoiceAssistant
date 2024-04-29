@@ -1,12 +1,10 @@
 package ru.urfu.voiceassistant.backend.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import ru.urfu.voiceassistant.backend.dto.FileUploadResponseDTO;
@@ -58,6 +56,19 @@ public class FileRecordController {
         List<File> files = fileService.findAllFilesByUserId(uniqueUser.getId());
         mainPage.addObject("files", files);
         return mainPage;
+    }
+
+    /**
+     * Обработчик для отправки запроса на обработку файла.
+     *
+     * @param fileId Идентификатор файла, для которого требуется обработка
+     * @return Объект ResponseEntity с сообщением об успешной отправке запроса
+     */
+    @GetMapping("/send-request")
+    @ResponseBody
+    public ResponseEntity<String> sendRequest(@RequestParam("fileId") Long fileId) {
+        fileService.sendRequestWithAudioData(fileId);
+        return ResponseEntity.ok("Запрос успешно отправлен");
     }
 
     /**

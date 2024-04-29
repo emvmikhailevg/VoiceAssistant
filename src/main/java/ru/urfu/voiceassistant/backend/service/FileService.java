@@ -43,13 +43,6 @@ public interface FileService {
     FileUploadResponseDTO createNewAudioFile(MultipartFile multipartFile) throws IOException;
 
     /**
-     * Ищет все существующие файлы.
-     *
-     * @return Список файлов.
-     */
-    List<File> findAllFiles();
-
-    /**
      * Ищет файл по переданному идентификатору.
      *
      * @param fileId Идентификатор файла.
@@ -64,4 +57,11 @@ public interface FileService {
      * @return   Список файлов.
      */
     List<File> findAllFilesByUserId(Long id);
+
+    /**
+     * Отправляет запрос с аудио на api с моделью
+     *
+     * @param fileId
+     */
+    void sendRequestWithAudioData(Long fileId);
 }

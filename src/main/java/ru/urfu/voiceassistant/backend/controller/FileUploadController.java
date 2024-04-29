@@ -1,6 +1,7 @@
 package ru.urfu.voiceassistant.backend.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +39,19 @@ public class FileUploadController {
                                 UserService userService) {
         this.fileService = fileService;
         this.userService = userService;
+    }
+
+    /**
+     * Обработчик для отправки запроса на обработку файла.
+     *
+     * @param fileId Идентификатор файла, для которого требуется обработка
+     * @return Объект ResponseEntity с сообщением об успешной отправке запроса
+     */
+    @GetMapping("/send-request")
+    @ResponseBody
+    public ResponseEntity<String> sendRequest(@RequestParam("fileId") Long fileId) {
+        fileService.sendRequestWithAudioData(fileId);
+        return ResponseEntity.ok("Запрос успешно отправлен");
     }
 
     /**

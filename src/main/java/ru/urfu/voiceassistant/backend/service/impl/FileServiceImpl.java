@@ -75,11 +75,6 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public List<File> findAllFiles() {
-        return fileRepository.findAll();
-    }
-
-    @Override
     public File findFileById(Long fileId) {
         return fileRepository.findFileById(fileId);
     }
@@ -87,6 +82,11 @@ public class FileServiceImpl implements FileService {
     @Override
     public List<File> findAllFilesByUserId(Long id) {
         return fileRepository.findFilesByUserId(id);
+    }
+
+    @Override
+    public void sendRequestWithAudioData(Long fileId) {
+        // TODO работа с api
     }
 
     /**
