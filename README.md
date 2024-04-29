@@ -3,3 +3,5 @@
 [Препроцессинг и обучение нейросети](https://colab.research.google.com/drive/1kPRGgKdAdibKN5HBU5d5QjmfZgytnKeK?usp=sharing#scrollTo=jXCueIb0EOGC)
 
 [Задачи на итерацию “Инициация”](https://docs.google.com/document/d/18yzugzoZP-HafsCK9E7pMnTFdYNNfHGPDTSnQLWTxlw/edit)
+
+[Черновик дизайна](https://www.figma.com/file/QiGYtH4LWSQwrAuwOwXdgE/Голосовой-помощник-(Copy)?type=design&node-id=0%3A1&mode=design&t=y978LjQa0MzElmOD-1)
